@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Palate Track Prototype</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="brief-panel">
+        <div class="brand-lockup">
+          <span class="brand-mark">PT</span>
+          <div>
+            <p class="eyebrow">악궁확장 치료 기록</p>
+            <h1>Palate Track</h1>
+          </div>
+        </div>
+
+        <nav class="mode-tabs" aria-label="프로토타입 보기 전환">
+          <button class="mode-tab active" data-mode="patient">환자 앱</button>
+          <button class="mode-tab" data-mode="admin">병원 관리자</button>
+        </nav>
+
+        <section class="project-card">
+          <h2>프로토타입 범위</h2>
+          <ul>
+            <li>고유 코드 단독 로그인</li>
+            <li>악궁확장기 모델 선택 및 안내</li>
+            <li>일일 회전수, 통증, 메모 기록</li>
+            <li>사진 첨부형 이상 증상 보고</li>
+            <li>병원용 환자 현황 확인</li>
+          </ul>
+        </section>
+
+        <section class="project-card tech-note">
+          <h2>제안 스택</h2>
+          <p>React Native 또는 Flutter, Node.js/NestJS API, PostgreSQL, S3 호환 스토리지, 병원 알림 이메일/웹훅 연동.</p>
+        </section>
+      </aside>
+
+      <main class="preview-stage">
+        <section class="patient-preview" data-panel="patient">
+          <div class="phone">
+            <div class="status-bar">
+              <span>09:41</span>
+              <span>LTE 100%</span>
+            </div>
+
+            <header class="phone-header">
+              <div>
+                <p class="eyebrow">오늘의 치료</p>
+                <h2 id="screen-title">환자 코드 입력</h2>
+              </div>
+              <button class="icon-button" type="button" id="reset-button" aria-label="처음으로">↺</button>
+            </header>
+
+            <div class="progress-rail" aria-label="진행 단계">
+              <span class="progress-dot active"></span>
+              <span class="progress-dot"></span>
+              <span class="progress-dot"></span>
+              <span class="progress-dot"></span>
+            </div>
+
+            <section class="screen active" id="login-screen" data-title="환자 코드 입력">
+              <div class="hero-band">
+                <p>병원에서 받은 고유 코드를 입력하면 치료 기록이 안전하게 연결됩니다.</p>
+              </div>
+              <label class="field-label" for="patient-code">환자 고유 코드</label>
+              <input id="patient-code" class="text-field" type="text" value="MSE-2408-017" inputmode="text" />
+              <button class="primary-button" type="button" data-next="model-screen">로그인</button>
+              <p class="helper-text">최초 로그인 후에는 악궁확장기 모델 선택 화면으로 이동합니다.</p>
+            </section>
+
+            <section class="screen" id="model-screen" data-title="장치 모델 선택">
+              <div class="model-list" id="model-list"></div>
+              <article class="result-panel">
+                <div>
+                  <p class="eyebrow">총 확장 가능량</p>
+                  <strong id="capacity-text">12.0 mm</strong>
+                </div>
+                <p id="model-guide">MSE1은 1회 회전당 0.25 mm 기준으로 기록합니다.</p>
+              </article>
+              <button class="primary-button" type="button" data-next="record-screen">모델 저장</button>
+            </section>
+
+            <section class="screen" id="record-screen" data-title="확장 기록 입력">
+              <div class="metric-row">
+                <article>
+                  <span>누적 확장량</span>
+                  <strong id="total-expansion">3.75 mm</strong>
+                </article>
+                <article>
+                  <span>오늘 확장량</span>
+                  <strong id="today-expansion">0.50 mm</strong>
+                </article>
+              </div>
+
+              <div class="form-grid">
+                <label>
+                  <span>날짜</span>
+                  <input id="record-date" type="date" />
+                </label>
+                <label>
+                  <span>확장 횟수</span>
+                  <input id="session-count" type="text" value="2" inputmode="numeric" />
+                </label>
+                <label>
+                  <span>회전수</span>
+                  <input id="turn-count" type="text" value="2" inputmode="decimal" />
+                </label>
+              </div>
+
+              <div class="pain-scale" aria-label="통증 정도">
+                <span>통증</span>
+                <div id="pain-buttons"></div>
+              </div>
+
+              <label class="field-label" for="memo">메모</label>
+              <textarea id="memo" rows="3">우측 어금니 쪽 압박감이 조금 있음.</textarea>
+              <button class="primary-button" type="button" id="save-record">기록 저장</button>
+              <button class="secondary-button" type="button" data-next="report-screen">이상 증상 보고</button>
+            </section>
+
+            <section class="screen" id="report-screen" data-title="이상 증상 보고">
+              <div class="upload-box">
+                <div class="camera-icon">+</div>
+                <p>카메라 촬영 또는 갤러리에서 사진 첨부</p>
+                <input id="symptom-photo" type="file" accept="image/*" />
+              </div>
+              <label class="field-label" for="symptom-message">증상 메시지</label>
+              <textarea id="symptom-message" rows="5">장치 주변 잇몸이 붓고 음식 섭취 시 통증이 있습니다.</textarea>
+              <button class="primary-button" type="button" id="send-report">병원으로 전송</button>
+              <button class="secondary-button" type="button" data-next="record-screen">기록 화면으로</button>
+              <p class="helper-text" id="report-status">사진과 메시지는 병원 서버 또는 지정 이메일로 전송됩니다.</p>
+            </section>
+
+            <nav class="bottom-nav" aria-label="환자 앱 하단 메뉴">
+              <button type="button" data-next="record-screen">기록</button>
+              <button type="button" data-next="model-screen">장치</button>
+              <button type="button" data-next="report-screen">보고</button>
+            </nav>
+          </div>
+        </section>
+
+        <section class="admin-preview hidden" data-panel="admin">
+          <div class="admin-shell">
+            <header class="admin-header">
+              <div>
+                <p class="eyebrow">Hospital Console</p>
+                <h2>환자 치료 현황</h2>
+              </div>
+              <button class="primary-button compact" type="button">환자 코드 발급</button>
+            </header>
+
+            <section class="admin-metrics">
+              <article>
+                <span>등록 환자</span>
+                <strong>128명</strong>
+              </article>
+              <article>
+                <span>오늘 기록</span>
+                <strong>43건</strong>
+              </article>
+              <article>
+                <span>이상 보고</span>
+                <strong>5건</strong>
+              </article>
+            </section>
+
+            <div class="admin-grid">
+              <section class="patient-table">
+                <div class="section-head">
+                  <h3>환자 목록</h3>
+                  <input type="search" placeholder="코드 또는 이름 검색" />
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>코드</th>
+                      <th>모델</th>
+                      <th>누적</th>
+                      <th>최근 기록</th>
+                    </tr>
+                  </thead>
+                  <tbody id="patient-table-body"></tbody>
+                </table>
+              </section>
+
+              <aside class="report-feed">
+                <div class="section-head">
+                  <h3>이상 증상 수신함</h3>
+                  <span class="badge">신규 2</span>
+                </div>
+                <article class="report-item urgent">
+                  <strong>MSE-2408-017</strong>
+                  <p>잇몸 부종 및 통증 보고. 첨부 사진 2장.</p>
+                  <span>10분 전</span>
+                </article>
+                <article class="report-item">
+                  <strong>KBE-2409-031</strong>
+                  <p>장치 주변 이물감 지속. 담당자 확인 필요.</p>
+                  <span>42분 전</span>
+                </article>
+                <article class="report-item">
+                  <strong>MSE3-2410-006</strong>
+                  <p>회전 후 압박감 문의. 사진 1장.</p>
+                  <span>어제</span>
+                </article>
+              </aside>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
