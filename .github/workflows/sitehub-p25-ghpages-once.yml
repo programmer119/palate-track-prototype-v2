@@ -1,0 +1,27 @@
+name: Patch SiteHub p25 actual gh-pages once
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/sitehub-p25-ghpages-once.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 1
+      - run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('index.html'); h=p.read_text(encoding='utf-8')
+          if 'data-sitehub-project="p25"' not in h:
+            d='악궁확장 치료기록관리 앱 프로토타입'
+            b=f'''\n<meta name="description" content="{d}"/>\n<link rel="canonical" href="https://programmer119.github.io/palate-track-prototype-v2/"/>\n<meta property="og:title" content="Palate Track Prototype"/>\n<meta property="og:description" content="{d}"/>\n<meta property="og:image" content="https://sitehub.suaveforge.com/assets/namecard-default.png"/>\n<meta property="og:url" content="https://programmer119.github.io/palate-track-prototype-v2/"/>\n<meta property="og:site_name" content="SuaveForge"/>\n<meta name="twitter:card" content="summary_large_image"/>\n<script async src="https://sitehub.suaveforge.com/analytics-loader.js" data-sitehub-project="p25"></script>\n'''
+            h=h.replace('</head>',b+'</head>',1); p.write_text(h,encoding='utf-8')
+          PY
+          git config user.name 'SuaveForge SiteHub'; git config user.email '53187583+programmer119@users.noreply.github.com'
+          git add index.html
+          git diff --cached --quiet || (git commit -m 'Integrate SiteHub p25 on gh-pages' && git push origin HEAD:gh-pages)
