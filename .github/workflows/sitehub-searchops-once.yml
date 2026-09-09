@@ -1,0 +1,28 @@
+name: SiteHub SearchOps p25 once
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/sitehub-searchops-once.yml']
+permissions: {contents: write}
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: gh-pages}
+      - name: Apply pinned SearchOps adapter
+        env:
+          PROJECT_ID: p25
+          PUBLIC_URL: https://programmer119.github.io/palate-track-prototype-v2/
+          PROJECT_NAME: 악궁확장 치료기록관리 앱
+          DESCRIPTION: 악궁확장 치료 과정과 기록을 관리하고 경과를 확인하는 치료기록관리 앱 프로토타입입니다.
+          INDEX_PATH: index.html
+          SITEMAP_PATH: sitemap.xml
+        run: |
+          set -Eeuo pipefail
+          curl -fsSL https://raw.githubusercontent.com/suaveforge/sitehub-deploy/949cbc636e900cbd3504c4a4ecfcc295511c6d70/searchops/static-page-adapter.py -o /tmp/sitehub-searchops.py
+          python /tmp/sitehub-searchops.py
+          git config user.name 'SuaveForge SiteHub'
+          git config user.email '53187583+programmer119@users.noreply.github.com'
+          git add index.html sitemap.xml
+          if ! git diff --cached --quiet; then git commit -m 'Apply SiteHub SearchOps p25'; git push origin HEAD:gh-pages; fi
